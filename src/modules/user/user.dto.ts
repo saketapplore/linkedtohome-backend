@@ -10,8 +10,8 @@ import { UserRole } from '../../constants/roles.constants';
  * DTO for creating a new user
  */
 export interface CreateUserDto {
+  readonly schoolName: string;
   readonly email: string;
-  readonly name: string;
   readonly role?: UserRole;
 }
 
@@ -19,8 +19,8 @@ export interface CreateUserDto {
  * DTO for updating an existing user
  */
 export interface UpdateUserDto {
+  schoolName?: string;
   email?: string;
-  name?: string;
   role?: UserRole;
 }
 
@@ -29,8 +29,8 @@ export interface UpdateUserDto {
  */
 export interface UserResponseDto {
   readonly id: string;
+  readonly schoolName: string;
   readonly email: string;
-  readonly name: string;
   readonly role: UserRole;
   readonly createdAt: Date;
   readonly updatedAt: Date;
@@ -51,16 +51,16 @@ export class CreateUserDtoValidator {
       throw new Error('Email is required and must be a string');
     }
 
-    if (!userData.name || typeof userData.name !== 'string') {
-      throw new Error('Name is required and must be a string');
+    if (!userData.schoolName || typeof userData.schoolName !== 'string') {
+      throw new Error('School name is required and must be a string');
     }
 
     if (userData.email.trim().length === 0) {
       throw new Error('Email cannot be empty');
     }
 
-    if (userData.name.trim().length === 0) {
-      throw new Error('Name cannot be empty');
+    if (userData.schoolName.trim().length === 0) {
+      throw new Error('School name cannot be empty');
     }
 
     // Basic email validation
@@ -70,8 +70,8 @@ export class CreateUserDtoValidator {
     }
 
     return {
+      schoolName: userData.schoolName.trim(),
       email: userData.email.trim(),
-      name: userData.name.trim(),
       role: userData.role as UserRole | undefined,
     };
   }
@@ -100,11 +100,11 @@ export class UpdateUserDtoValidator {
       result.email = userData.email.trim();
     }
 
-    if (userData.name !== undefined) {
-      if (typeof userData.name !== 'string' || userData.name.trim().length === 0) {
-        throw new Error('Name must be a non-empty string');
+    if (userData.schoolName !== undefined) {
+      if (typeof userData.schoolName !== 'string' || userData.schoolName.trim().length === 0) {
+        throw new Error('School name must be a non-empty string');
       }
-      result.name = userData.name.trim();
+      result.schoolName = userData.schoolName.trim();
     }
 
     if (userData.role !== undefined) {

@@ -7,23 +7,26 @@ import { UserRole } from '../../constants/roles.constants';
  */
 export class User {
   public readonly id: string;
+  public readonly schoolName: string;
   public readonly email: string;
-  public readonly name: string;
+  public readonly password: string; // Hashed password - never returned in responses
   public readonly role: UserRole;
   public readonly createdAt: Date;
   public readonly updatedAt: Date;
 
   constructor(
     id: string,
+    schoolName: string,
     email: string,
-    name: string,
+    password: string,
     role: UserRole = UserRole.USER,
     createdAt: Date = new Date(),
     updatedAt: Date = new Date()
   ) {
     this.id = id;
+    this.schoolName = schoolName;
     this.email = email;
-    this.name = name;
+    this.password = password;
     this.role = role;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
@@ -34,16 +37,18 @@ export class User {
    */
   public static fromPlainObject(data: {
     id: string;
+    schoolName: string;
     email: string;
-    name: string;
+    password: string;
     role?: UserRole;
     createdAt?: Date;
     updatedAt?: Date;
   }): User {
     return new User(
       data.id,
+      data.schoolName,
       data.email,
-      data.name,
+      data.password,
       data.role || UserRole.USER,
       data.createdAt || new Date(),
       data.updatedAt || new Date()
@@ -55,16 +60,17 @@ export class User {
    */
   public toPlainObject(): {
     id: string;
+    schoolName: string;
     email: string;
-    name: string;
     role: UserRole;
     createdAt: Date;
     updatedAt: Date;
+    // Note: password is intentionally excluded for security
   } {
     return {
       id: this.id,
+      schoolName: this.schoolName,
       email: this.email,
-      name: this.name,
       role: this.role,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,

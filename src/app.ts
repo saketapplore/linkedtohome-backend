@@ -4,7 +4,11 @@ import { CorsMiddleware } from './middlewares/cors.middleware';
 import { UserRoutes } from './modules/user/user.routes';
 import { UserService } from './modules/user/user.service';
 import { UserRepository } from './modules/user/user.repository';
+import { AuthRoutes } from './modules/auth/auth.routes';
+import { AuthService } from './modules/auth/auth.service';
 import { Logger } from './utils/logger';
+// Import schema to ensure it's registered with Mongoose
+import './modules/user/user.schema';
 
 /**
  * Application setup
@@ -49,12 +53,19 @@ export class App {
       res.status(200).json({ status: 'ok', timestamp: new Date().toISOString() });
     });
 
+    // Shared repository instance
+    const userRepository = new UserRepository();
+
+    // Auth module routes
+    // Dependency Injection: Repository -> Service -> Controller -> Routes
+    const authService = new AuthService(userRepository);
+    const authRoutes = new AuthRoutes(authService);
+    this.app.use('/api/auth', authRoutes.getRouter());
+
     // User module routes
     // Dependency Injection: Repository -> Service -> Controller -> Routes
-    const userRepository = new UserRepository();
     const userService = new UserService(userRepository);
     const userRoutes = new UserRoutes(userService);
-
     this.app.use('/api/users', userRoutes.getRouter());
 
     Logger.info('Routes initialized');

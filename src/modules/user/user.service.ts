@@ -75,8 +75,9 @@ export class UserService implements IUserService {
 
     // Create user through repository
     const user = await this.repository.create({
+      schoolName: createUserDto.schoolName,
       email: normalizedEmail,
-      name: createUserDto.name,
+      password: '', // Empty password for admin-created users (should set password separately)
       role: createUserDto.role,
     });
 
@@ -97,12 +98,12 @@ export class UserService implements IUserService {
 
     // Business logic: Normalize email if provided
     // Use a plain object type instead of Partial<User> since User properties are readonly
-    const updateData: { email?: string; name?: string; role?: UserRole } = {};
+    const updateData: { schoolName?: string; email?: string; role?: UserRole } = {};
+    if (updateUserDto.schoolName) {
+      updateData.schoolName = updateUserDto.schoolName;
+    }
     if (updateUserDto.email) {
       updateData.email = updateUserDto.email.toLowerCase().trim();
-    }
-    if (updateUserDto.name) {
-      updateData.name = updateUserDto.name;
     }
     if (updateUserDto.role) {
       updateData.role = updateUserDto.role;
@@ -121,12 +122,12 @@ export class UserService implements IUserService {
    * Create user (implements IBaseService)
    */
   public async create(data: Partial<User>): Promise<User> {
-    if (!data.email || !data.name) {
-      throw new ApiError(400, 'Email and name are required');
+    if (!data.email || !data.schoolName) {
+      throw new ApiError(400, 'Email and school name are required');
     }
     return await this.createUser({
+      schoolName: data.schoolName,
       email: data.email,
-      name: data.name,
       role: data.role,
     });
   }
@@ -136,8 +137,8 @@ export class UserService implements IUserService {
    */
   public async update(id: string, data: Partial<User>): Promise<User> {
     return await this.updateUser(id, {
+      schoolName: data.schoolName,
       email: data.email,
-      name: data.name,
       role: data.role,
     });
   }
